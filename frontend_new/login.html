@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title data-i18n>Login AgriTech</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="login-container">
+
+  <div class="logo">🌱</div>
+  <h1 data-i18n>Login AgriTech</h1>
+
+  <!-- EMAIL -->
+  <div class="input-group">
+    <input type="email" id="email" placeholder="Enter email" data-i18n-placeholder>
+  </div>
+
+  <button class="login-btn" onclick="sendOTP()" data-i18n>Send OTP</button>
+
+  <!-- OTP SECTION -->
+  <div id="otpSection" style="display:none;margin-top:15px;">
+
+    <div class="input-group">
+      <input type="text" id="otp" placeholder="Enter OTP" data-i18n-placeholder>
+    </div>
+
+    <button class="login-btn" onclick="verifyOTP()" data-i18n>Verify OTP</button>
+
+  </div>
+
+  <div class="divider"><span data-i18n>OR</span></div>
+
+  <button class="guest-btn" onclick="guestLogin()" data-i18n>Continue as Guest</button>
+
+</div>
+
+<script src="i18n.js?v=10"></script>
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
+
+async function t(text) {
+  const lang = (localStorage.getItem("selectedLanguage") || "en").toLowerCase();
+  if (lang === "en" || typeof window.translateTextBatch !== "function") return text;
+  const out = await window.translateTextBatch([text], lang);
+  return out[0] || text;
+}
+
+async function sendOTP() {
+  const email = document.getElementById("email").value;
+
+  if (!email) {
+    alert(await t("Please enter your email"));
+    return;
+  }
+
+  const res = await fetch(`${BASE_URL}/api/auth/send-otp/`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({email})
+  });
+
+  if(res.ok){
+    alert(await t("OTP sent"));
+    document.getElementById("otpSection").style.display = "block";
+  } else {
+    let message = "Failed to send OTP";
+    try {
+      const data = await res.json();
+      message = data.error || data.message || message;
+    } catch {}
+    alert(`${await t("Error")}: ${message}`);
+  }
+}
+
+async function verifyOTP() {
+  const email = document.getElementById("email").value;
+  const otp = document.getElementById("otp").value;
+
+  const res = await fetch(`${BASE_URL}/api/auth/verify-otp/`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({email, otp})
+  });
+
+  const data = await res.json();
+
+  if(res.ok){
+    localStorage.setItem("token", data.token);
+    if (data.user_id) localStorage.setItem("userId", data.user_id);
+    localStorage.setItem("userEmail", data.email);
+    localStorage.setItem("userType", "user");
+
+    window.location.href = "home.html";
+  } else {
+    const message = data.error || data.message || "Invalid OTP";
+    alert(`${await t("Error")}: ${message}`);
+  }
+}
+
+function guestLogin(){
+  localStorage.setItem("userType","guest");
+  window.location.href="home.html";
+}
+</script>
+
+</body>
+</html>

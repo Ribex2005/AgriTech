@@ -1,0 +1,64 @@
+# Quick run commands (Windows)
+# 1) Activate virtual environment
+venv\Scripts\Activate.ps1   # PowerShell
+venv\Scripts\activate       # CMD
+
+# 2) Install dependencies (first time / after changes)
+.\venv\Scripts\python.exe -m pip install --upgrade pip
+.\venv\Scripts\python.exe -m pip install -r agrosense_backend\requirements.txt
+.\venv\Scripts\python.exe -m pip install django-cors-headers
+
+# 3) Migrate DB and start server
+cd agrosense_backend
+..\venv\Scripts\python.exe manage.py migrate
+..\venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000 --noreload
+
+#for frontend
+cd ..
+.\venv\Scripts\python.exe -m http.server 3000
+http://localhost:3000/frontend_new/home.html
+
+# quick one-command startup scripts (from project root)
+.\start_backend.ps1
+.\start_frontend.ps1
+.\start_dev.ps1
+
+# Useful endpoints
+http://127.0.0.1:8000/api/health/
+http://127.0.0.1:8000/api/auth/send-otp/ 
+http://127.0.0.1:8000/api/auth/verify-otp/ 
+
+http://127.0.0.1:8000/api/market-price/?crop_name=wheat
+http://127.0.0.1:8000/api/market-price/?crop_name=tomato&user_id=USR_7f6519
+http://127.0.0.1:8000/api/market-price-history/?user_id=USR_7f6519
+
+http://127.0.0.1:8000/api/schemes/?crop_name=rice&user_id=USR_7f6519
+
+http://127.0.0.1:8000/api/schemes/?search=Kisan
+http://127.0.0.1:8000/api/schemes/?crop_name=wheat
+http://127.0.0.1:8000/api/schemes/?flagship=true
+http://127.0.0.1:8000/api/schemes/
+
+http://127.0.0.1:8000/api/disease-history/?user_id=USR_7f6519
+ (POST form-data with image file)
+#json input format
+{
+  "email": "@gmail.com"
+}
+{
+  "email": "@gmail.com",
+  "otp": ""
+}
+
+impportant end points
+http://127.0.0.1:8000/api/health/
+http://127.0.0.1:8000/api/detect/
+http://127.0.0.1:8000/api/market-price/
+http://127.0.0.1:8000/api/schemes/
+http://127.0.0.1:8000/api/chat/message/ 
+
+cd .\agrosense_backend
+python manage.py runserver 127.0.0.1:8000 --noreload
+
+cd C:\Users\aadya\cropd
+python -m http.server 3000

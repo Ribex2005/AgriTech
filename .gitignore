@@ -1,0 +1,28 @@
+# Virtual environments
+venv/
+.venv/
+*/.venv/
+*/venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Django
+db.sqlite3
+
+# Node
+node_modules/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+*.env

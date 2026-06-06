@@ -1,0 +1,135 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background */
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") no-repeat center center/cover;
+  filter: blur(6px);
+  z-index: -1;
+}
+
+/* Glass Card */
+.login-container {
+  width: 380px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+/* Logo */
+.logo {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  color: #1b5e20;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: gray;
+}
+
+/* Inputs */
+.input-group {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 40px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #2e7d32;
+}
+
+/* Login Button */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(to right, #2e7d32, #1b5e20);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+}
+
+/* Divider */
+.divider {
+  margin: 20px 0;
+  position: relative;
+  text-align: center;
+}
+
+.divider span {
+  background: white;
+  padding: 0 10px;
+  color: gray;
+  font-size: 13px;
+}
+
+.divider:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  top: 50%;
+  left: 0;
+  z-index: -1;
+}
+
+/* Guest Button */
+.guest-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  border: 2px solid #2e7d32;
+  background: transparent;
+  color: #2e7d32;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.guest-btn:hover {
+  background: #2e7d32;
+  color: white;
+}

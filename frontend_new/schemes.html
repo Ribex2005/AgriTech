@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n>Government Schemes</title>
+    <link rel="stylesheet" href="schemes.css?v=2">
+</head>
+<body>
+
+<!-- Header -->
+<div class="schemes-header">
+    <div>
+        <h1 data-i18n>Government Schemes</h1>
+        <p style="opacity:0.7;margin-top:6px;font-size:14px;">
+            <span data-i18n>Explore agriculture schemes available for farmers across India.</span>
+        </p>
+    </div>
+
+    <button onclick="goBack()" data-i18n>← Back</button>
+</div>
+
+<!-- Flagship Section -->
+<section class="flagship-section">
+    <h2 data-i18n>Popular Schemes</h2>
+    <div id="flagshipContainer" class="scheme-grid"></div>
+</section>
+
+<!-- Filter Section -->
+<section class="filter-section">
+    <h2 data-i18n>🔍 Explore Schemes</h2>
+
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="Search by scheme name" data-i18n-placeholder>
+
+        <select id="stateFilter">
+            <option value="" data-i18n>All States</option>
+            <option value="Uttarakhand" data-i18n>Uttarakhand</option>
+            <option value="Uttar Pradesh" data-i18n>Uttar Pradesh</option>
+            <option value="Punjab" data-i18n>Punjab</option>
+            <option value="Maharashtra" data-i18n>Maharashtra</option>
+            <option value="Tamil Nadu" data-i18n>Tamil Nadu</option>
+        </select>
+
+        <select id="categoryFilter">
+            <option value="" data-i18n>All Categories</option>
+            <option value="Insurance" data-i18n>Insurance</option>
+            <option value="Credit" data-i18n>Credit</option>
+            <option value="Irrigation" data-i18n>Irrigation</option>
+            <option value="Subsidy" data-i18n>Subsidy</option>
+            <option value="Income Support" data-i18n>Income Support</option>
+            <option value="Soil Health" data-i18n>Soil Health</option>
+        </select>
+
+        <button onclick="applyFilters()" data-i18n>Apply</button>
+    </div>
+</section>
+
+<!-- Schemes Grid -->
+<section class="results-section">
+    <div id="schemesContainer" class="scheme-grid"></div>
+</section>
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" class="close-btn">✖</span>
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+        <ul id="modalBenefits"></ul>
+        <a id="modalLink" target="_blank" data-i18n>Visit Official Website</a>
+    </div>
+</div>
+
+    <script src="i18n.js?v=10"></script>
+<script src="schemes.js?v=5"></script>
+
+<script>
+function goBack() {
+    window.location.href = "home.html";
+}
+</script>
+
+</body>
+</html>

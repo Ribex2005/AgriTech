@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriTech - AI Crop Disease Detection</title>
+<link rel="stylesheet" href="home.css?v=3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* Additional critical styles */
+#chatModal {
+    z-index: 10000 !important;
+}
+
+.modal-locked {
+    pointer-events: none !important;
+}
+
+.modal-locked .chat-box {
+    pointer-events: auto !important;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header>
+  <div class="logo" data-i18n>🌱 AgriTech</div>
+  <nav>
+    <select id="languageSelect" onchange="saveLanguage()" style="margin-right:15px;">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="bn">Bengali</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="mr">Marathi</option>
+      <option value="gu">Gujarati</option>
+      <option value="kn">Kannada</option>
+      <option value="ml">Malayalam</option>
+      <option value="pa">Punjabi</option>
+      <option value="or">Odia</option>
+      <option value="as">Assamese</option>
+      <option value="ur">Urdu</option>
+      <option value="sa">Sanskrit</option>
+      <option value="ne">Nepali</option>
+      <option value="gom">Konkani</option>
+      <option value="sd">Sindhi</option>
+      <option value="ks">Kashmiri</option>
+      <option value="mni">Manipuri</option>
+      <option value="brx">Bodo</option>
+      <option value="doi">Dogri</option>
+      <option value="mai">Maithili</option>
+      <option value="sat">Santali</option>
+    </select>
+    <button type="button" id="helpBtn" class="help-btn" data-i18n>Help</button>
+    <div class="profile-container">
+      <div class="profile-icon" onclick="toggleProfile()">
+        <img src="avatar.jpg" id="guestImage" class="avatar-img">
+        <div class="letter-avatar" id="letterAvatar" style="display:none;">
+          <span id="userLetter"></span>
+        </div>
+      </div>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-top">
+          <img src="avatar.jpg" id="guestImageLarge" class="avatar-img large-avatar">
+          <div class="letter-avatar large-avatar" id="letterAvatarLarge" style="display:none;">
+            <span id="userLetterLarge"></span>
+          </div>
+          <div class="profile-info">
+            <strong id="profileName">User</strong>
+            <p id="profileEmail">email@example.com</p>
+          </div>
+        </div>
+        <hr class="dropdown-divider">
+        <div class="dropdown-item" onclick="openHistory()">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span data-i18n>History</span>
+        </div>
+        <div class="dropdown-item" onclick="getLocation()">
+          <i class="fa-solid fa-location-dot"></i>
+          <span data-i18n>Use My Location</span>
+        </div>
+        <div class="dropdown-item" onclick="openSettings()">
+          <i class="fa-solid fa-gear"></i>
+          <span data-i18n>Settings</span>
+        </div>
+        <div class="dropdown-item logout-item" id="authButton" onclick="handleAuth()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span id="authText">Logout</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1 data-i18n>AI-Powered Crop Disease Detection</h1>
+  <p data-i18n>Upload crop images and get instant disease analysis.</p>
+  <button class="hero-btn" id="scrollBtn" data-i18n>Start Detection</button>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <h2 data-i18n>🌿 Our Smart Features</h2>
+  <p class="subtitle" data-i18n>Helping farmers with AI technology</p>
+  <div class="features-grid">
+    <div class="card" onclick="openChat()">
+      <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6" alt="Crop Disease Detection">
+      <span class="tag" data-i18n>AI Detector</span>
+      <h3 data-i18n>Crop Disease Identification</h3>
+      <p data-i18n>Upload plant images and detect diseases instantly.</p>
+    </div>
+    <div class="card" onclick="window.location.href='schemes.html'">
+      <img src="gov_scheme.jpg" alt="Government Schemes">
+      <span class="tag" data-i18n>Government Support</span>
+      <h3 data-i18n>Government Scheme Assistance</h3>
+      <p data-i18n>Check agriculture schemes &amp; subsidies.</p>
+    </div>
+    <div class="card" onclick="openMarketChat()">
+      <img src="market_price.jpeg" alt="Market Prices">
+      <span class="tag" data-i18n>Market Update</span>
+      <h3 data-i18n>Live Market Prices</h3>
+      <p data-i18n>Check mandi rates and crop prices.</p>
+    </div>
+    <div class="card" onclick="openAIChat()">
+      <img src="image.png" alt="AI Chatbot">
+      <span class="tag" data-i18n>AI Support</span>
+      <h3 data-i18n>Smart Farming Chatbot</h3>
+      <p data-i18n>Ask farming questions anytime.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DISEASE DETECTION MODAL -->
+<div class="chat-modal" id="chatModal">
+  <div class="chat-box">
+    <div class="chat-header">
+      <span data-i18n>🌱 Crop Disease Detection</span>
+      <span id="detectCloseBtn" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body">
+      <p class="bot-msg" data-i18n>Capture or upload a crop image, then click Detect.</p>
+      <div id="debugPanel" style="display:none;"></div>
+      <div id="imagePreviewContainer" style="display:none;text-align:center;margin-top:15px;">
+        <img id="imagePreview" style="max-width:100%;border-radius:10px;" alt="Preview">
+        <div id="detectionResult" style="margin-top:15px;"></div>
+      </div>
+    </div>
+    <div class="chat-upload">
+      <input type="file" id="imageInput" accept="image/*" hidden>
+      <button type="button" id="openCameraBtn" data-i18n>📷 Camera</button>
+      <button type="button" id="uploadBtn" data-i18n>⬆ Upload</button>
+      <button type="button" id="detectBtn" data-i18n>🔍 Detect</button>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET MODAL -->
+<div class="chat-modal" id="marketModal">
+  <div class="chat-box">
+    <div class="chat-header">
+      <span data-i18n>📈 Market Price Finder</span>
+      <span onclick="closeMarketChat()">✖</span>
+    </div>
+    <div class="chat-body vertical-form">
+      <input type="text" id="marketLocation" placeholder="State / City" data-i18n-placeholder>
+      <input type="text" id="cropName" placeholder="Crop Name" data-i18n-placeholder>
+      <button class="full-btn" onclick="searchMarket()" data-i18n>Check Price</button>
+      <div id="marketResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI CHATBOT MODAL -->
+<div class="ai-chat-modal" id="aiChatModal">
+  <div class="ai-chat-container">
+    <div class="ai-chat-header">
+      <span data-i18n>🌱 Agri AI Assistant</span>
+      <span onclick="closeAIChat()">✖</span>
+    </div>
+    <div class="ai-chat-messages" id="chatMessages">
+      <div class="bot-message" data-i18n>Hello 👋 Ask me anything about farming!</div>
+    </div>
+    <div class="ai-chat-input-area">
+      <input type="text" id="userInput" placeholder="Type your question..." data-i18n-placeholder>
+      <button onclick="sendMessage()" data-i18n>Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP / CONTACT MODAL -->
+<div class="chat-modal" id="helpModal">
+  <div class="chat-box help-box">
+    <div class="chat-header">
+      <span data-i18n>❔ Help Center</span>
+      <span id="helpCloseBtn" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body help-body">
+      <section class="help-section">
+        <h4 data-i18n>FAQ</h4>
+        <details>
+          <summary data-i18n>How do I detect crop disease?</summary>
+          <p data-i18n>Go to Smart Features, tap AI Detector, upload a crop image, and click Detect.</p>
+        </details>
+        <details>
+          <summary data-i18n>How do I check market prices?</summary>
+          <p data-i18n>Open Live Market Prices, enter crop and location, then tap Check Price.</p>
+        </details>
+        <details>
+          <summary data-i18n>How do I use the farming chatbot?</summary>
+          <p data-i18n>Open Smart Farming Chatbot, type your crop or farming question, and tap Send for guidance.</p>
+        </details>
+        <details>
+          <summary data-i18n>What can I ask in the chatbot?</summary>
+          <p data-i18n>You can ask about crop diseases, prevention, fertilizers, irrigation, season-wise planning, and farm best practices.</p>
+        </details>
+        <details>
+          <summary data-i18n>Why is translation sometimes slower?</summary>
+          <p data-i18n>Some languages rely on best-effort translation paths and may take a little longer.</p>
+        </details>
+      </section>
+
+      <section class="help-section">
+        <h4 data-i18n>Contact</h4>
+        <p>
+          <span data-i18n>Support Email:</span>
+          <a id="supportEmailLink" href="mailto:help.agritech.app@gmail.com">help.agritech.app@gmail.com</a>
+        </p>
+      </section>
+
+      <section class="help-section">
+        <h4 data-i18n>Send Feedback</h4>
+        <div class="vertical-form">
+          <input type="text" id="feedbackName" placeholder="Your Name" data-i18n-placeholder>
+          <input type="email" id="feedbackEmail" placeholder="Your Email" data-i18n-placeholder>
+          <textarea id="feedbackMessage" placeholder="Tell us what can be improved..." rows="4" data-i18n-placeholder></textarea>
+          <button class="full-btn" type="button" id="feedbackSubmitBtn" data-i18n>Submit Feedback</button>
+          <p id="feedbackStatus" class="help-status"></p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="chat-modal" id="historyModal">
+  <div class="chat-box profile-panel-box">
+    <div class="chat-header">
+      <span data-i18n>🕘 Activity History</span>
+      <span id="historyCloseBtn" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body profile-panel-body">
+      <div class="history-actions" id="historyActions" style="display:none;">
+        <button type="button" class="pill-btn" id="deleteSelectedHistoryBtn" data-i18n>Delete Selected</button>
+        <button type="button" class="pill-btn danger" id="clearAllHistoryBtn" data-i18n>Clear All Activity</button>
+      </div>
+      <div id="historyContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="chat-modal" id="settingsModal">
+  <div class="chat-box profile-panel-box">
+    <div class="chat-header">
+      <span data-i18n>⚙ Profile Settings</span>
+      <span id="settingsCloseBtn" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body profile-panel-body">
+      <div class="vertical-form">
+        <label class="field-label" for="settingsName" data-i18n>Display Name</label>
+        <input type="text" id="settingsName" placeholder="Your Name" data-i18n-placeholder class="pro-input">
+        <label class="field-label" for="settingsEmail" data-i18n>Verified Email</label>
+        <input type="email" id="settingsEmail" placeholder="Your Email" data-i18n-placeholder class="pro-input" readonly>
+        <label class="toggle-row" for="themeToggle">
+          <span data-i18n>Dark Mode</span>
+          <input type="checkbox" id="themeToggle">
+        </label>
+        <button type="button" class="full-btn" id="settingsSaveBtn" data-i18n>Save Profile</button>
+        <button type="button" class="full-btn secondary-btn" id="openHistoryManagerBtn" data-i18n>Manage Activity History</button>
+        <p id="settingsStatus" class="help-status"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p data-i18n>© 2026 AgriTech | Empowering Farmers with AI 🌱</p>
+</footer>
+
+<script src="i18n.js?v=10"></script>
+<script src="home.js?v=45"></script>
+</body>
+</html>
