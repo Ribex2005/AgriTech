@@ -154,8 +154,14 @@ def initialize_model():
 
 
 # Initialize model at module load
-initialize_model()
+_initialized = False
 
+def ensure_initialized():
+    global _initialized
+
+    if not _initialized:
+        initialize_model()
+        _initialized = True
 
 def preprocess_image(img_path, target_size=None):
     """Preprocess image with error handling"""
@@ -227,6 +233,7 @@ def predict_image(img_path):
     Main prediction function with comprehensive error handling
     Returns prediction result with confidence as decimal (0-1)
     """
+    ensure_initialized()
     logger.info(f"Predicting image: {img_path}")
     
     # Check model
