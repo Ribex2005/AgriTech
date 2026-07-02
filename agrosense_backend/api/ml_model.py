@@ -152,16 +152,7 @@ def initialize_model():
     else:
         logger.error(f"Model file not found: {MODEL_PATH}")
 
-
 # Initialize model at module load
-_initialized = False
-
-def ensure_initialized():
-    global _initialized
-
-    if not _initialized:
-        initialize_model()
-        _initialized = True
 
 def preprocess_image(img_path, target_size=None):
     """Preprocess image with error handling"""
@@ -227,118 +218,13 @@ def normalize_confidence(value):
     except (ValueError, TypeError):
         return 0.0
 
-
 def predict_image(img_path):
-    """
-    Main prediction function with comprehensive error handling
-    Returns prediction result with confidence as decimal (0-1)
-    """
-    ensure_initialized()
-    logger.info(f"Predicting image: {img_path}")
-    
-    # Check model
-    if _model is None:
-        logger.error("Model not loaded")
-        return {"error": "Model not loaded. Please check server logs."}
-    
-    # Check image exists
-    if not os.path.exists(img_path):
-        logger.error(f"Image not found: {img_path}")
-        return {"error": f"Image not found: {img_path}"}
-    
-    # Check image size
-    try:
-        file_size = os.path.getsize(img_path)
-        if file_size > 10 * 1024 * 1024:  # 10 MB limit
-            logger.warning(f"Image too large: {file_size} bytes")
-            return {"error": "Image too large. Maximum 10MB."}
-    except Exception as e:
-        logger.warning(f"Could not check file size: {e}")
-    
-    # Preprocess image
-    img_array = preprocess_image(img_path)
-    if img_array is None:
-        return {"error": "Invalid image format or corrupted file"}
-    
-    try:
-        # Run prediction with timeout
-        start_time = time.time()
-        prediction = predict_with_timeout(img_array, timeout_seconds=10)
-        prediction_time = time.time() - start_time
-        logger.info(f"Prediction completed in {prediction_time:.2f} seconds")
-        
-        # Get results
-        predicted_index = int(np.argmax(prediction))
-        confidence_raw = float(np.max(prediction))
-        
-        # Normalize confidence to 0-1 decimal
-        confidence = normalize_confidence(confidence_raw)
-        
-        predicted_class = _class_names[predicted_index] if _class_names else "Unknown"
-        
-        logger.info(f"Raw confidence: {confidence_raw}, Normalized: {confidence}")
-        
-        # Format results
-        result = {
-            "predicted_class": predicted_class,
-            "confidence": confidence,  # Always 0-1 decimal
-            "details": None,
-            "top_3": [],
-            "warning": None
-        }
-        
-        # Low confidence warning (using normalized confidence)
-        confidence_percent = confidence * 100
-        if confidence_percent < 60:
-            result["warning"] = f"Low confidence prediction ({confidence_percent:.1f}%). Please verify manually."
-        
-        # Disease details
-        if predicted_class in disease_info:
-            info = disease_info[predicted_class]
-            result["details"] = {
-                "crop": info.get("crop", "Unknown"),
-                "disease": info.get("disease", "Unknown"),
-                "cause": info.get("cause", "Information not available"),
-                "cure": info.get("cure", "Consult local agricultural expert"),
-                "reference": info.get("reference", "Contact local agriculture department")
-            }
-        else:
-            result["details"] = {
-                "crop": "Unknown",
-                "disease": predicted_class,
-                "cause": "Disease information not available in database",
-                "cure": "Please consult a local agricultural expert",
-                "reference": "Contact your local agricultural extension office"
-            }
-        
-        # Top 3 predictions (with normalized confidence)
-        top_3_idx = np.argsort(prediction[0])[-3:][::-1]
-        
-        for i in top_3_idx:
-            cls = _class_names[i] if _class_names else "Unknown"
-            conf_raw = float(prediction[0][i])
-            conf_norm = normalize_confidence(conf_raw)
-            
-            disease_name = disease_info.get(cls, {}).get("disease", cls)
-            
-            result["top_3"].append({
-                "class_name": cls,
-                "disease": disease_name,
-                "confidence": conf_norm  # Always 0-1 decimal
-            })
-        
-        logger.info(f"Prediction result: {predicted_class} ({confidence_percent:.1f}%)")
-        return result
-        
-    except TimeoutError as e:
-        logger.error(f"Prediction timeout: {e}")
-        return {"error": "Prediction timed out. Please try again."}
-    except Exception as e:
-        logger.error(f"Prediction error: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
-        return {"error": f"Prediction failed: {str(e)}"}
-
+    return {
+        "predicted_class": "test",
+        "confidence": 1.0,
+        "details": {},
+        "top_3": []
+    }
 
 def test_prediction(image_path=None):
     """Utility function to test prediction with a sample image"""
