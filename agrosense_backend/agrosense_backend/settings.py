@@ -19,8 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # --------------------------------------------------
 SECRET_KEY = 'django-insecure-m$g_aig+qt*4n5g7#^v0m%r#2zljqfyow0xrb+s*&prjxz3ihr'
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+DEBUG = False
+ALLOWED_HOSTS = ["agritech-uzc8.onrender.com",]
 
 
 # --------------------------------------------------
