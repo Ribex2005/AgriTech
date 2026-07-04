@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://agritech-uzc8.onrender.com";
 const FRONTEND_BUILD = "home.js v44";
 
 let isProcessing = false;
