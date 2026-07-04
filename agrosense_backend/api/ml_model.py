@@ -1,7 +1,5 @@
-import tensorflow as tf
 import numpy as np
 import json
-import os
 import logging
 import zipfile
 import time
@@ -11,7 +9,15 @@ from functools import lru_cache
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from .disease_info import disease_info
+import traceback
+import os
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+import tensorflow as tf
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -61,44 +67,49 @@ def _normalize_keras_path(path):
         logger.error(f"Failed to pack .keras directory '{path}': {e}")
         return path
 
-
 def load_model_with_timeout(model_path, timeout_seconds=30):
-    """Load model with timeout to prevent hanging"""
+    """Load model with timeout"""
+
     result_queue = queue.Queue()
-    
+
     def load_model_thread():
         try:
             effective_path = _normalize_keras_path(model_path)
-            logger.info(f"Loading model from: {effective_path}")
-            
-            # Limit TensorFlow threads to reduce memory
-            tf.config.threading.set_inter_op_parallelism_threads(2)
-            tf.config.threading.set_intra_op_parallelism_threads(2)
-            
+
+            logger.info("=" * 60)
+            logger.info("Starting TensorFlow model load")
+            logger.info(f"Model path : {effective_path}")
+
+            if os.path.exists(effective_path):
+                size = os.path.getsize(effective_path) / (1024 * 1024)
+                logger.info(f"Model size : {size:.2f} MB")
+            else:
+                logger.error("Model file does not exist.")
+                result_queue.put(FileNotFoundError(effective_path))
+                return
+
             loaded_model = tf.keras.models.load_model(
-                effective_path, 
-                compile=False, 
+                effective_path,
+                compile=False,
                 safe_mode=False
             )
+
+            logger.info("TensorFlow model loaded successfully.")
             result_queue.put(loaded_model)
-        except Exception as e:
-            result_queue.put(e)
-    
-    # Start loading in separate thread
-    load_thread = threading.Thread(target=load_model_thread, daemon=True)
-    load_thread.start()
-    load_thread.join(timeout_seconds)
-    
-    if load_thread.is_alive():
-        logger.error(f"Model loading timed out after {timeout_seconds} seconds")
+
+        except Exception:
+            logger.error(traceback.format_exc())
+            result_queue.put(None)
+
+    thread = threading.Thread(target=load_model_thread, daemon=True)
+    thread.start()
+    thread.join(timeout_seconds)
+
+    if thread.is_alive():
+        logger.error("Model loading timed out.")
         return None
-    
-    result = result_queue.get()
-    if isinstance(result, Exception):
-        logger.error(f"Model loading failed: {result}")
-        return None
-    
-    return result
+
+    return result_queue.get()
 
 
 def load_class_names():
@@ -121,38 +132,37 @@ def load_class_names():
         logger.error(f"Class names loading failed: {e}")
         return []
 
-
 def initialize_model():
-    """Initialize model at module load with timeout"""
-    global _model, _model_image_size, _class_names
-    
-    logger.info("Initializing model...")
-    
-    # Load class names first
+    global _model, _class_names, _model_image_size
+
+    logger.info("=" * 60)
+    logger.info("Initializing ML model")
+
     _class_names = load_class_names()
-    
-    # Load model with timeout
-    if os.path.exists(MODEL_PATH):
-        _model = load_model_with_timeout(MODEL_PATH, timeout_seconds=30)
-        
-        if _model is not None:
-            # Infer image size from model
-            try:
-                input_shape = _model.input_shape
-                if input_shape and len(input_shape) >= 3:
-                    inferred_h = int(input_shape[1])
-                    inferred_w = int(input_shape[2])
-                    if inferred_h > 0 and inferred_w > 0:
-                        _model_image_size = (inferred_h, inferred_w)
-                logger.info(f"Model loaded successfully. Input size={_model_image_size}")
-            except Exception as e:
-                logger.warning(f"Could not infer input shape: {e}")
-        else:
-            logger.error("Model failed to load")
-    else:
-        logger.error(f"Model file not found: {MODEL_PATH}")
 
+    if not os.path.exists(MODEL_PATH):
+        logger.error(f"Model not found: {MODEL_PATH}")
+        return
 
+    _model = load_model_with_timeout(MODEL_PATH)
+
+    if _model is None:
+        logger.error("Model initialization failed.")
+        return
+
+    try:
+        shape = _model.input_shape
+
+        if len(shape) >= 3:
+            _model_image_size = (
+                int(shape[1]),
+                int(shape[2])
+            )
+
+        logger.info(f"Input size: {_model_image_size}")
+
+    except Exception:
+        logger.warning(traceback.format_exc())
 # Initialize model at module load
 _initialized = False
 
@@ -238,8 +248,10 @@ def predict_image(img_path):
     
     # Check model
     if _model is None:
-        logger.error("Model not loaded")
-        return {"error": "Model not loaded. Please check server logs."}
+        logger.error("Prediction requested but model is None.")
+        return {
+            "error": "TensorFlow model failed to initialize. Check Render logs."
+        }
     
     # Check image exists
     if not os.path.exists(img_path):
@@ -252,8 +264,11 @@ def predict_image(img_path):
         if file_size > 10 * 1024 * 1024:  # 10 MB limit
             logger.warning(f"Image too large: {file_size} bytes")
             return {"error": "Image too large. Maximum 10MB."}
-    except Exception as e:
-        logger.warning(f"Could not check file size: {e}")
+    except Exception:
+        logger.error(traceback.format_exc())
+        return {
+            "error": "Prediction failed due to an internal server error."
+        }
     
     # Preprocess image
     img_array = preprocess_image(img_path)
