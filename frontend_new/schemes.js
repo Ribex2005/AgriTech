@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://agritech-uzc8.onrender.com";
 
 function getUserId() {
     const existing = localStorage.getItem("userId");
