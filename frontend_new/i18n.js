@@ -1,4 +1,4 @@
-const I18N_BASE_URL = "http://127.0.0.1:8000";
+const I18N_BASE_URL = "https://agritech-uzc8.onrender.com";
 const I18N_DEFAULT_LANG = "en";
 const I18N_CACHE_KEY = "i18nCacheV2";
 const I18N_REQUEST_TIMEOUT_MS = 25000;
