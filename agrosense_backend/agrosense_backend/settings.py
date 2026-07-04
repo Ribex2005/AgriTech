@@ -49,8 +49,6 @@ INSTALLED_APPS = [
 # DJANGO REST FRAMEWORK
 # --------------------------------------------------
 REST_FRAMEWORK = {
-    # ✅ FIX: Removed SessionAuthentication — it enforces CSRF on POST requests.
-    # Since we use JWT, we don't need session-based auth at all.
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [],
     'DEFAULT_PARSER_CLASSES': [
@@ -63,20 +61,16 @@ REST_FRAMEWORK = {
 
 # --------------------------------------------------
 # MIDDLEWARE
-# ✅ FIX: Explicit ordering — CorsMiddleware first, then JWTAuthMiddleware,
-#         then everything else. Removed the broken MIDDLEWARE.insert(0, ...)
-#         pattern which was pushing JWT before CorsMiddleware and causing
-#         preflight OPTIONS requests to fail.
 # --------------------------------------------------
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',                          # ← MUST be first
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'api.middleware.auth_middleware.JWTAuthMiddleware',               # ← after CORS
+    'api.middleware.auth_middleware.JWTAuthMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # ✅ FIX: CsrfViewMiddleware REMOVED — frontend sends no CSRF token,
-    #         and we use JWT for auth. Keeping it was silently 403-ing every
-    #         POST request (detect, chat, market) from the browser.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -142,7 +136,11 @@ USE_TZ = True
 # STATIC & MEDIA FILES
 # --------------------------------------------------
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
@@ -155,7 +153,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --------------------------------------------------
 # CORS SETTINGS
-# ✅ These are correct and unchanged.
 # --------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
