@@ -1,0 +1,247 @@
+# 🌱 Agritech – AI-Powered Smart Agriculture Assistant
+
+Agritech is an AI-powered web application that helps farmers identify crop diseases from leaf images and access agricultural resources through intelligent services such as multilingual support, market price information, government schemes, and an AI chatbot. The platform combines Machine Learning, Deep Learning, and Web Technologies to provide an accessible digital farming assistant.
+
+---
+
+## Features
+
+- 🌿 AI-powered crop disease detection from leaf images
+- 🤖 Intelligent agriculture chatbot for farmer assistance
+- 🌍 Multilingual user interface with translation support
+- 📈 Crop market price information
+- 🏛 Government schemes and subsidy recommendations
+- 🔐 Secure OTP-based authentication using JWT
+- 📊 Disease detection history for authenticated users
+- 💬 User feedback and activity tracking
+
+---
+
+# Tech Stack
+
+### Backend
+- Python
+- Django
+- Django REST Framework
+
+### Machine Learning
+- TensorFlow
+- Keras
+- Scikit-learn
+
+### Database
+- MongoDB
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+---
+
+# System Architecture
+
+```text
+                 Frontend
+          (HTML, CSS, JavaScript)
+                     │
+              REST API Requests
+                     │
+                     ▼
+         Django REST Framework
+                     │
+      ┌──────────────┼──────────────┐
+      │              │              │
+      ▼              ▼              ▼
+ Disease         Chatbot      Translation
+ Detection        Service        Service
+      │
+      ▼
+TensorFlow/Keras CNN Model
+      │
+      ▼
+    MongoDB
+```
+
+---
+
+# Application Workflow
+
+## User Authentication
+
+1. User enters their email address.
+2. The system generates and sends an OTP.
+3. User verifies the OTP.
+4. A JWT token is generated.
+5. Authenticated requests use the JWT token for authorization.
+
+---
+
+## Crop Disease Detection
+
+1. User uploads an image of a crop leaf.
+2. The backend validates the uploaded image.
+3. The image is preprocessed.
+4. The TensorFlow CNN model predicts the disease.
+5. Disease information and confidence score are generated.
+6. Results are returned to the frontend.
+7. Detection history is stored for authenticated users.
+
+---
+
+## Agriculture Chatbot
+
+1. User submits a query.
+2. The chatbot classifies the intent using TF-IDF Vectorization and Logistic Regression.
+3. Depending on the identified intent, it retrieves information related to:
+   - Crop diseases
+   - Government schemes
+   - Market prices
+   - General agricultural knowledge
+4. The generated response is returned to the user.
+
+---
+
+# Machine Learning
+
+## Crop Disease Detection
+
+- Convolutional Neural Network (CNN) built using TensorFlow and Keras
+- Image preprocessing using MobileNetV2 preprocessing utilities
+- Predicts crop diseases from uploaded leaf images
+- Returns the predicted disease along with its confidence score
+
+## Agriculture Chatbot
+
+- TF-IDF Vectorization
+- Logistic Regression-based Intent Classification
+- Knowledge-based response retrieval
+- Fallback mechanism for low-confidence predictions
+
+---
+
+# Database
+
+MongoDB is used to store:
+
+- User information
+- OTP verification records
+- Disease detection history
+- User activity logs
+- User feedback
+- Market price search history
+
+---
+
+# API Modules
+
+- Authentication
+- Crop Disease Detection
+- Agriculture Chatbot
+- Government Schemes
+- Market Prices
+- Translation
+- User Activity
+- Feedback
+
+---
+
+# Installation
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/Agritech.git
+```
+
+## Navigate to the Project
+
+```bash
+cd Agritech
+```
+
+## Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+## Activate the Virtual Environment
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS**
+
+```bash
+source venv/bin/activate
+```
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+## Configure Environment Variables
+
+Create a `.env` file in the project directory and add the required environment variables.
+
+Example:
+
+```env
+SECRET_KEY=your_secret_key
+MONGODB_URI=your_mongodb_connection_string
+EMAIL_HOST_USER=your_email
+EMAIL_HOST_PASSWORD=your_email_password
+JWT_SECRET_KEY=your_jwt_secret_key
+```
+
+## Run the Development Server
+
+```bash
+python manage.py runserver
+```
+
+The application will be available at:
+
+```
+http://127.0.0.1:8000/
+```
+---
+
+# Future Improvements
+
+- Real-time weather integration
+- Enhanced disease prediction accuracy
+- Model retraining pipeline
+- Advanced recommendation system
+- Mobile application
+- Cloud deployment
+- Performance optimization
+
+---
+
+# Skills Demonstrated
+
+- Full-Stack Web Development
+- REST API Development
+- Deep Learning
+- Machine Learning
+- Natural Language Processing
+- Authentication & Authorization
+- MongoDB Database Integration
+- Backend Development
+- Frontend Development
+- Software Engineering
+
+---
+
+# License
+
+This project was developed for educational and academic purposes.
+
+---
