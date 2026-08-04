@@ -151,7 +151,7 @@ MongoDB is used to store:
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/Agritech.git
+git clone https://github.com/Ribex2005/AgriTech.git
 ```
 
 ## Navigate to the Project
