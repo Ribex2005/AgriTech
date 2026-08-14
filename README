@@ -149,11 +149,11 @@ MongoDB is used to store:
 
 ## Home Page
 
-![AgriTech Home Page](screenshots/frontpage.png)
+![AgriTech Home Page](screenshots/front_page.png)
 
 ## Crop Disease Detection
 
-![Crop Disease Detection](screenshots/disease_detection.png)
+![Crop Disease Detection](screenshots/disease-detection.png)
 
 ## Agriculture Chatbot
 
@@ -165,12 +165,12 @@ MongoDB is used to store:
 
 ## Government Schemes
 
-![Government Schemes](screenshots/govt_schemes.png)
+![Government Schemes](screenshots/govt_scheme.png)
 
 ## Multilingual Support
 
-![Malayalam Interface](screenshots/frontpage_malayalam.png)
-![Chatbot support](screenshots/chatbot_different languages.png)
+![Malayalam Interface](screenshots/front_page-malayalam.png)
+![Chatbot support](screenshots/chatbot-different_languages.png)
 
 # Installation
 
