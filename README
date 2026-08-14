@@ -145,6 +145,32 @@ MongoDB is used to store:
 - Feedback
 
 ---
+# Screenshots
+
+## Home Page
+
+![AgriTech Home Page](screenshots/frontpage.png)
+
+## Crop Disease Detection
+
+![Crop Disease Detection](screenshots/disease_detection.png)
+
+## Agriculture Chatbot
+
+![Agriculture Chatbot](screenshots/chatbot.png)
+
+## Market Prices
+
+![Market Prices](screenshots/market_price.png)
+
+## Government Schemes
+
+![Government Schemes](screenshots/govt_schemes.png)
+
+## Multilingual Support
+
+![Malayalam Interface](screenshots/frontpage_malayalam.png)
+![Chatbot support](screenshots/chatbot_different languages.png)
 
 # Installation
 
